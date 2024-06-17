@@ -1,0 +1,121 @@
+#include <iostream>
+ 
+using namespace std;
+ 
+struct node {
+    int key;
+    struct node *left, *right;
+};
+ 
+
+struct node* newNode(int item)
+{
+    struct node* temp
+        = new struct node;
+    temp->key = item;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+ 
+
+struct node* insert(struct node* node, int key)
+{
+    
+    if (node == NULL)
+        return newNode(key);
+ 
+    
+    if (key < node->key)
+        node->left = insert(node->left, key);
+    else if (key > node->key)
+        node->right = insert(node->right, key);
+ 
+    
+    return node;
+}
+
+
+struct node* findParent(struct node* node, struct node* child) {
+    
+    if (node == NULL || node == child)
+        return NULL;
+
+    
+    if (node->left == child || node->right == child)
+        return node;
+
+    
+    if (child->key < node->key)
+        return findParent(node->left, child);
+    else if (child->key > node->key)
+        return findParent(node->right, child);
+
+    return NULL; 
+}
+
+ 
+
+struct node* search(struct node* root, int key)
+{
+
+    if (root == NULL || root->key == key)
+        return root;
+ 
+
+    if (root->key < key)
+        return search(root->right, key);
+ 
+
+    return search(root->left, key);
+}
+int count=1;
+void inorder(struct node* root,int tmp)
+{
+    if (root != NULL) 
+    {
+        inorder(root->left,tmp);
+        if(root->key==tmp){
+            cout<<"Order : "<<count<<endl;
+        }
+        count++;
+        inorder(root->right,tmp);
+    }
+}
+
+
+int main()
+{
+    struct node* root = NULL;
+    int n;
+    cin>>n;
+    bool first=true;
+    for(int i=0;i<n;i++){
+        string s;
+        int tmp;
+        cin>>s>>tmp;
+        if(s=="Insert"){
+            if(first){
+                root = insert(root, tmp);
+                first=false;
+            }else{
+                insert(root, tmp);
+            }
+        }else if(s=="Parent"){
+            if(search(root, tmp) == NULL){
+                cout << "Orphanage, here it comes" << endl;
+            }else{
+            struct node* child = search(root, tmp);
+            struct node* parent = findParent(root, child);
+            if(parent != NULL)
+                cout << "Child of " << parent->key << endl;
+            else
+                cout << "Orphanage, here it comes" << endl;
+            }
+        }else if(s=="Order"){
+            count=1;
+            inorder(root,tmp);
+        }
+    }
+    
+    return 0;
+}
